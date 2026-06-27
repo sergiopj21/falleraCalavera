@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a1628">
+  <title>El Corsari Maleït</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA: INICIO
+══════════════════════════════════════════════════ -->
+<div id="screen-lobby" class="screen active">
+  <div class="lobby-bg">
+    <div class="waves"></div>
+  </div>
+  <div class="lobby-container">
+    <header class="lobby-header">
+      <div class="skull-deco">☠</div>
+      <h1 class="title-main">El Corsari Maleït</h1>
+      <p class="title-sub">Joc de cartes · 2 a 5 jugadors</p>
+    </header>
+
+    <div class="lobby-panels">
+      <div class="panel panel-create">
+        <h2>Crear sala</h2>
+        <div class="field">
+          <label>Tu nombre</label>
+          <input type="text" id="create-nombre" placeholder="Capità..." maxlength="18" autocomplete="off">
+        </div>
+        <button id="btn-create" class="btn btn-gold">⚓ Crear sala</button>
+        <div id="room-code-display" class="code-display hidden">
+          <span>Código de sala:</span>
+          <strong id="room-code-value"></strong>
+          <button id="btn-copy-code" class="btn btn-ghost btn-sm">Copiar</button>
+        </div>
+        <button id="btn-start" class="btn btn-start hidden">🏴‍☠️ Iniciar partida</button>
+        <div id="lobby-players" class="lobby-players-list hidden"></div>
+      </div>
+
+      <div class="panel-divider"><span>o</span></div>
+
+      <div class="panel panel-join">
+        <h2>Unirse a sala</h2>
+        <div class="field">
+          <label>Tu nombre</label>
+          <input type="text" id="join-nombre" placeholder="Marinero..." maxlength="18" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Código de sala</label>
+          <input type="text" id="join-codigo" placeholder="XXXXXX" maxlength="6" style="text-transform:uppercase; letter-spacing: 4px;" autocomplete="off">
+        </div>
+        <button id="btn-join" class="btn btn-blue">🌊 Unirse</button>
+      </div>
+    </div>
+
+    <div id="lobby-error" class="error-msg hidden"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PANTALLA: JUEGO
+══════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+
+  <!-- Header -->
+  <header class="game-header">
+    <div class="game-logo">☠ El Corsari Maleït</div>
+    <div class="game-status">
+      <span id="hdr-mazo">Mazo: <strong id="hdr-mazo-n">0</strong></span>
+      <span id="hdr-fons">Fons Marí: <strong id="hdr-fons-n">0</strong></span>
+      <span id="hdr-sala">Sala: <strong id="hdr-sala-code"></strong></span>
+    </div>
+    <div id="turn-indicator" class="turn-indicator"></div>
+  </header>
+
+  <div class="game-body">
+
+    <!-- Rivales (arriba) -->
+    <section id="rivals-section" class="rivals-section"></section>
+
+    <!-- Centro: mazo + log -->
+    <section class="center-section">
+      <div class="deck-area">
+        <button id="btn-draw" class="deck-btn" title="Almoina: robar 1 carta">
+          <span class="deck-icon">🂠</span>
+          <span class="deck-label">Robar</span>
+          <span class="deck-count" id="deck-count">0</span>
+        </button>
+        <div class="fons-mari">
+          <span>🪦</span>
+          <span id="fons-count">0</span>
+        </div>
+      </div>
+      <div class="log-panel">
+        <div class="log-title">📜 Diario de a bordo</div>
+        <div id="game-log"></div>
+      </div>
+    </section>
+
+    <!-- Mi zona (abajo) -->
+    <section class="my-section">
+      <div class="my-cubierta-wrapper">
+        <div class="zone-label">Tu cubierta</div>
+        <div id="my-cubierta" class="cubierta-cards"></div>
+      </div>
+      <div class="my-hand-wrapper">
+        <div class="zone-label">Tu mano <span id="my-hand-count"></span></div>
+        <div id="my-hand" class="hand-cards"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Botón fin de turno -->
+  <div class="action-bar">
+    <div id="actions-left" class="actions-left"></div>
+    <button id="btn-end-turn" class="btn btn-end hidden">Pasar turno ⏭</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL: Seleccionar objetivo / acción
+══════════════════════════════════════════════════ -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal">
+    <button id="modal-close" class="modal-close">✕</button>
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+    <div id="modal-actions" class="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL: Batalla recibida
+══════════════════════════════════════════════════ -->
+<div id="battle-overlay" class="modal-overlay hidden">
+  <div class="modal modal-battle">
+    <div class="battle-skull">⚔️</div>
+    <h3 id="battle-title"></h3>
+    <p id="battle-desc"></p>
+    <div id="battle-my-cubierta" class="cubierta-cards modal-cubierta"></div>
+    <div class="zone-label" style="margin-top:12px">Elige carta(s) de combat para defender — o rinde:</div>
+    <div id="battle-my-hand" class="hand-cards modal-hand"></div>
+    <div class="modal-actions">
+      <button id="btn-defend" class="btn btn-gold">🛡 Defender</button>
+      <button id="btn-surrender" class="btn btn-ghost">🏳 Rendirse</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL: FIN DE PARTIDA
+══════════════════════════════════════════════════ -->
+<div id="end-overlay" class="modal-overlay hidden">
+  <div class="modal modal-end">
+    <div class="end-skull">🏆</div>
+    <h2 id="end-title"></h2>
+    <p id="end-desc"></p>
+    <button id="btn-new-game" class="btn btn-gold">Volver al inicio</button>
+  </div>
+</div>
+
+<!-- Tooltip flotante -->
+<div id="tooltip" class="tooltip hidden"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
